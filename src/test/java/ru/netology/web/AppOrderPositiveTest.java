@@ -31,7 +31,7 @@ class AppOrderpositiveTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
-
+        driver.get("http://localhost:9999");
     }
 
     @AfterEach
@@ -43,8 +43,6 @@ class AppOrderpositiveTest {
     @Test
     void shouldTestV1() throws InterruptedException {
 
-        driver.get("http://localhost:9999");
-
         driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("Хвиюзова Валерия");
         driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79990000000");
         driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
@@ -54,6 +52,42 @@ class AppOrderpositiveTest {
         assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.", actualText);
         assertTrue(actualTextElement.isDisplayed());
 
+    }
+
+    @Test
+    void shouldTestNegative() throws InterruptedException {
+
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79990000000");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.cssSelector("button.button")).click();
+        assertEquals("Поле обязательно для заполнения",
+                driver.findElement(By.cssSelector("[data-test-id=name].input_invalid .input__sub")).getText().trim());
+        assertTrue(driver.findElement(By.cssSelector("[data-test-id=name].input_invalid .input__sub")).isDisplayed());
+
+    }
+
+    @Test
+    void shouldTestNegativePhone() throws InterruptedException {
+
+        driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("Хвиюзова Валерия");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.cssSelector("button.button")).click();
+        assertEquals("Поле обязательно для заполнения",
+                driver.findElement(By.cssSelector("[data-test-id=phone].input_invalid .input__sub")).getText().trim());
+        assertTrue(driver.findElement(By.cssSelector("[data-test-id=phone].input_invalid .input__sub")).isDisplayed());
+
+    }
+
+    @Test
+    void shouldTestNegativePhoneIncorrect() throws InterruptedException {
+
+        driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("Хвиюзова Валерия");
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("Вася");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.cssSelector("button.button")).click();
+        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.",
+                driver.findElement(By.cssSelector("[data-test-id=phone].input_invalid .input__sub")).getText().trim());
+        assertTrue(driver.findElement(By.cssSelector("[data-test-id=phone].input_invalid .input__sub")).isDisplayed());
 
     }
 }
