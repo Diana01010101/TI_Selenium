@@ -14,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppOrderpositiveTest {
     private WebDriver driver;
@@ -30,7 +31,7 @@ class AppOrderpositiveTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
-        driver.get("http://localhost:9999");
+
     }
 
     @AfterEach
@@ -40,6 +41,19 @@ class AppOrderpositiveTest {
     }
 
     @Test
-    void shouldTestV1() {
+    void shouldTestV1() throws InterruptedException {
+
+        driver.get("http://localhost:9999");
+
+        driver.findElement(By.cssSelector("[data-test-id=name] input")).sendKeys("Хвиюзова Валерия");
+        driver.findElement(By.cssSelector("[data-test-id=phone] input")).sendKeys("+79990000000");
+        driver.findElement(By.cssSelector("[data-test-id=agreement]")).click();
+        driver.findElement(By.cssSelector("button.button")).click();
+        var actualTextElement = driver.findElement(By.cssSelector("[data-test-id=order-success]"));
+        var actualText = actualTextElement.getText().trim();
+        assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.", actualText);
+        assertTrue(actualTextElement.isDisplayed());
+
+
     }
 }
